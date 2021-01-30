@@ -3,13 +3,7 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Sessionize",
-			"type": "LinkedServiceReference",
-			"parameters": {
-				"EventCode": {
-					"value": "@pipeline.globalParameters.EventCode",
-					"type": "Expression"
-				}
-			}
+			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "RestResource",
