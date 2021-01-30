@@ -78,7 +78,7 @@
 				"type": "RestService",
 				"typeProperties": {
 					"url": "[parameters('Sessionize_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
+					"enableServerCertificateValidation": false,
 					"authenticationType": "Anonymous"
 				}
 			},
