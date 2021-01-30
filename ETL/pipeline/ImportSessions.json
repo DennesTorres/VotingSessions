@@ -47,7 +47,13 @@
 				"outputs": [
 					{
 						"referenceName": "sessionstemp",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"EventCode": {
+								"value": "@pipeline().globalParameters.EventCode",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
