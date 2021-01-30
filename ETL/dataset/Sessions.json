@@ -3,7 +3,18 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Sessionize",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"EventCode": {
+					"value": "@dataset().EventCode",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"EventCode": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "RestResource",
