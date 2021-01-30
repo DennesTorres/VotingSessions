@@ -1,4 +1,12 @@
 {
 	"name": "SessionVoting",
+	"properties": {
+		"globalParameters": {
+			"EventCode": {
+				"type": "string",
+				"value": "pudjjkcn"
+			}
+		}
+	},
 	"location": "northeurope"
 }
