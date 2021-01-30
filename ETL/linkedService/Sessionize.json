@@ -1,0 +1,17 @@
+{
+	"name": "Sessionize",
+	"properties": {
+		"parameters": {
+			"EventCode": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "@{\"https://sessionize.com/api/v2/\" + linkedService().EventCode}",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
