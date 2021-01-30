@@ -27,7 +27,21 @@
 							"type": "AzureBlobFSWriteSettings"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": true
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "sessionizetemp",
+								"type": "LinkedServiceReference"
+							},
+							"path": "sessionize"
+						}
+					}
 				},
 				"inputs": [
 					{
