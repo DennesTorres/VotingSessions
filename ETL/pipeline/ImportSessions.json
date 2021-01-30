@@ -22,9 +22,12 @@
 						"requestMethod": "GET"
 					},
 					"sink": {
-						"type": "BinarySink",
+						"type": "JsonSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
 						}
 					},
 					"enableStaging": false,
@@ -57,14 +60,8 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "sessionstemp2",
-						"type": "DatasetReference",
-						"parameters": {
-							"EventCode": {
-								"value": "@pipeline().globalParameters.EventCode",
-								"type": "Expression"
-							}
-						}
+						"referenceName": "sessionstemp",
+						"type": "DatasetReference"
 					}
 				]
 			}
