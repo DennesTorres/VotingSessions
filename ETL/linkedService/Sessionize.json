@@ -10,7 +10,7 @@
 		"type": "RestService",
 		"typeProperties": {
 			"url": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}",
-			"enableServerCertificateValidation": true,
+			"enableServerCertificateValidation": false,
 			"authenticationType": "Anonymous"
 		}
 	}
