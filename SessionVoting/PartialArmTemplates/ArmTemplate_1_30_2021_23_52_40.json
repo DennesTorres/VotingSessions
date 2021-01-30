@@ -6,84 +6,12 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "SessionVoting"
-		},
-		"sessionizetemp_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'sessionizetemp'"
-		},
-		"dataFactory_properties_globalParameters_EventCode_value": {
-			"type": "string",
-			"defaultValue": "pudjjkcn"
-		},
-		"dataFactory_location": {
-			"type": "string",
-			"defaultValue": "northeurope"
-		},
-		"Sessionize_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}"
-		},
-		"sessionizetemp_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://eventsessions.dfs.core.windows.net"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[parameters('factoryName')]",
-			"type": "Microsoft.DataFactory/factories",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"globalParameters": {
-					"EventCode": {
-						"type": "string",
-						"value": "[parameters('dataFactory_properties_globalParameters_EventCode_value')]"
-					}
-				}
-			},
-			"dependsOn": [],
-			"location": "[parameters('dataFactory_location')]"
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Sessionize')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"EventCode": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('Sessionize_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sessionizetemp')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('sessionizetemp_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('sessionizetemp_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Sessions')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -112,40 +40,30 @@
 				"schema": []
 			},
 			"dependsOn": [
+				"[variables('factoryId')]",
 				"[concat(variables('factoryId'), '/linkedServices/Sessionize')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/sessionstemp')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/Sessionize')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sessionizetemp",
-					"type": "LinkedServiceReference"
-				},
 				"parameters": {
 					"EventCode": {
-						"type": "string"
+						"type": "String"
 					}
 				},
 				"annotations": [],
-				"type": "Json",
+				"type": "RestService",
 				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@concat('sessions',dataset().EventCode,'.json')",
-							"type": "Expression"
-						},
-						"folderPath": "sessions",
-						"fileSystem": "sessionize"
-					}
-				},
-				"schema": {}
+					"url": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
+				"[variables('factoryId')]"
 			]
 		},
 		{
@@ -213,8 +131,62 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[variables('factoryId')]",
 				"[concat(variables('factoryId'), '/datasets/Sessions')]",
 				"[concat(variables('factoryId'), '/datasets/sessionstemp')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sessionizetemp')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "https://eventsessions.dfs.core.windows.net",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "**********"
+					}
+				}
+			},
+			"dependsOn": [
+				"[variables('factoryId')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sessionstemp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sessionizetemp",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"EventCode": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('sessions',dataset().EventCode,'.json')",
+							"type": "Expression"
+						},
+						"folderPath": "sessions",
+						"fileSystem": "sessionize"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[variables('factoryId')]",
+				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
 			]
 		}
 	]

@@ -5,6 +5,15 @@
 		"factoryName": {
 			"value": "SessionVoting"
 		},
+		"sessionizetemp_accountKey": {
+			"value": ""
+		},
+		"Sessionize_properties_typeProperties_url": {
+			"value": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}"
+		},
+		"sessionizetemp_properties_typeProperties_url": {
+			"value": "https://eventsessions.dfs.core.windows.net"
+		},
 		"dataFactory_properties_globalParameters_EventCode_value": {
 			"value": "pudjjkcn"
 		},

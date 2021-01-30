@@ -7,6 +7,18 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "SessionVoting"
 		},
+		"sessionizetemp_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'sessionizetemp'"
+		},
+		"Sessionize_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}"
+		},
+		"sessionizetemp_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://eventsessions.dfs.core.windows.net"
+		},
 		"dataFactory_properties_globalParameters_EventCode_value": {
 			"type": "string",
 			"defaultValue": "pudjjkcn"
@@ -42,11 +54,20 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"sessionizetemp_accountKey": {
+						"value": "[parameters('sessionizetemp_accountKey')]"
+					},
 					"dataFactory_properties_globalParameters_EventCode_value": {
 						"value": "[parameters('dataFactory_properties_globalParameters_EventCode_value')]"
 					},
 					"dataFactory_location": {
 						"value": "[parameters('dataFactory_location')]"
+					},
+					"Sessionize_properties_typeProperties_url": {
+						"value": "[parameters('Sessionize_properties_typeProperties_url')]"
+					},
+					"sessionizetemp_properties_typeProperties_url": {
+						"value": "[parameters('sessionizetemp_properties_typeProperties_url')]"
 					}
 				}
 			},
