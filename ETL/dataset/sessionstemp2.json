@@ -1,0 +1,27 @@
+{
+	"name": "sessionstemp2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sessionizetemp",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"EventCode": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('sessions',dataset().EventCode,'.json')",
+					"type": "Expression"
+				},
+				"folderPath": "sessions",
+				"fileSystem": "sessionize"
+			}
+		}
+	}
+}
