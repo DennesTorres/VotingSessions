@@ -9,7 +9,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "@{(concat('https://sessionize.com/api/v2/',linkedService().EventCode))}",
+			"url": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
