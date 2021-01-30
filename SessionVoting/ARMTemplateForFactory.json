@@ -114,7 +114,8 @@
 							"sink": {
 								"type": "JsonSink",
 								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
+									"type": "AzureBlobFSWriteSettings",
+									"copyBehavior": "FlattenHierarchy"
 								},
 								"formatSettings": {
 									"type": "JsonWriteSettings"
