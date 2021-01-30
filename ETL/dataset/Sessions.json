@@ -1,0 +1,21 @@
+{
+	"name": "Sessions",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sessionize",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"EventCode": {
+					"value": "@pipeline.globalParameters.EventCode",
+					"type": "Expression"
+				}
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "/view/Sessions"
+		},
+		"schema": []
+	}
+}
