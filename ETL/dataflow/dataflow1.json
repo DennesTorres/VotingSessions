@@ -1,0 +1,27 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Speakers",
+						"type": "DatasetReference"
+					},
+					"name": "SpeakersSource"
+				},
+				{
+					"name": "SpeakersDestination"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "SpeakerExist"
+				}
+			],
+			"script": "source(output(\n\t\tId as string,\n\t\tName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SpeakersSource\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SpeakersDestination\nSpeakersSource exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),\n\tnegate:true,\n\tbroadcast: 'auto')~> SpeakerExist"
+		}
+	}
+}

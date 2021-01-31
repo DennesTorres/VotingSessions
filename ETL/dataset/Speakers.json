@@ -1,0 +1,30 @@
+{
+	"name": "Speakers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sessionizetemp",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "speakers.csv",
+				"folderPath": "speakers",
+				"fileSystem": "sessionize"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
