@@ -1,0 +1,39 @@
+{
+	"name": "ImportSpeakers",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Speakers",
+						"type": "DatasetReference"
+					},
+					"name": "SpeakersSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "SpeakersDestination",
+						"type": "DatasetReference"
+					},
+					"name": "SpeakersDestination"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SpeakersDestination",
+						"type": "DatasetReference"
+					},
+					"name": "SavingSpeakers"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SpeakerExist"
+				}
+			],
+			"script": "source(output(\n\t\tId as string,\n\t\tName as string,\n\t\tProfilePicture as string,\n\t\ttagLine as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SpeakersSource\nsource(output(\n\t\tId as integer,\n\t\tCode as string,\n\t\tName as string,\n\t\tTagLine as string,\n\t\tProfilePicture as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SpeakersDestination\nSpeakersSource, SpeakersDestination exists(SpeakersSource@Id == Code,\n\tnegate:true,\n\tbroadcast: 'auto')~> SpeakerExist\nSpeakerExist sink(input(\n\t\tId as integer,\n\t\tCode as string,\n\t\tName as string,\n\t\tTagLine as string,\n\t\tProfilePicture as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tCode = Id,\n\t\tName,\n\t\tTagLine = tagLine,\n\t\tProfilePicture\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> SavingSpeakers"
+		}
+	}
+}
