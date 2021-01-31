@@ -7,7 +7,36 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "title",
+				"type": "varchar"
+			},
+			{
+				"name": "description",
+				"type": "varchar"
+			},
+			{
+				"name": "SpeakerId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ConferenceId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OriginalId",
+				"type": "int",
+				"precision": 10
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "Sessions"
