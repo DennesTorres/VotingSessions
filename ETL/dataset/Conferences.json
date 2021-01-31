@@ -1,0 +1,26 @@
+{
+	"name": "Conferences",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ConferencesDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "code",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Conferences"
+		}
+	}
+}
