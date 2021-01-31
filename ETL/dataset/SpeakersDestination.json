@@ -1,0 +1,38 @@
+{
+	"name": "SpeakersDestination",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ConferencesDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Code",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "Name",
+				"type": "varchar"
+			},
+			{
+				"name": "TagLine",
+				"type": "varchar"
+			},
+			{
+				"name": "ProfilePicture",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Speakers"
+		}
+	}
+}
