@@ -5,10 +5,10 @@
 		"factoryName": {
 			"value": "SessionVoting"
 		},
-		"sessionizetemp_accountKey": {
+		"ConferencesDB_connectionString": {
 			"value": ""
 		},
-		"ConferencesDB_connectionString": {
+		"sessionizetemp_accountKey": {
 			"value": ""
 		},
 		"Sessionize_properties_typeProperties_url": {

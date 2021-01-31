@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "SessionVoting"
 		},
-		"sessionizetemp_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'sessionizetemp'"
-		},
 		"ConferencesDB_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ConferencesDB'"
+		},
+		"sessionizetemp_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'sessionizetemp'"
 		},
 		"dataFactory_properties_globalParameters_EventCode_value": {
 			"type": "string",
@@ -50,6 +50,19 @@
 			},
 			"dependsOn": [],
 			"location": "[parameters('dataFactory_location')]"
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ConferencesDB')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ConferencesDB_connectionString')]"
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Sessionize')]",
@@ -89,19 +102,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ConferencesDB')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('ConferencesDB_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Sessions')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -130,6 +130,177 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Sessionize')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SessionsDestination')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ConferencesDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "title",
+						"type": "varchar"
+					},
+					{
+						"name": "description",
+						"type": "varchar"
+					},
+					{
+						"name": "SpeakerId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ConferenceId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OriginalId",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Sessions"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ConferencesDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sessionsfile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sessionizetemp",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "sessions.csv",
+						"folderPath": "sessions",
+						"fileSystem": "sessionize"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Speakers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "sessionizetemp",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "speakers.csv",
+						"folderPath": "speakers",
+						"fileSystem": "sessionize"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SpeakersDestination')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ConferencesDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Code",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "Name",
+						"type": "varchar"
+					},
+					{
+						"name": "TagLine",
+						"type": "varchar"
+					},
+					{
+						"name": "ProfilePicture",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Speakers"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ConferencesDB')]"
 			]
 		},
 		{
@@ -198,42 +369,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Speakers')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sessionizetemp",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "speakers.csv",
-						"folderPath": "speakers",
-						"fileSystem": "sessionize"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SpeakersDestination')]",
+			"name": "[concat(parameters('factoryName'), '/Conferences')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -250,87 +386,13 @@
 						"precision": 10
 					},
 					{
-						"name": "Code",
-						"type": "uniqueidentifier"
-					},
-					{
-						"name": "Name",
-						"type": "varchar"
-					},
-					{
-						"name": "TagLine",
-						"type": "varchar"
-					},
-					{
-						"name": "ProfilePicture",
+						"name": "code",
 						"type": "varchar"
 					}
 				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "Speakers"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ConferencesDB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Sessionsfile')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sessionizetemp",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "sessions.csv",
-						"folderPath": "sessions",
-						"fileSystem": "sessionize"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					},
-					{
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SessionsDestination')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ConferencesDB",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Sessions"
+					"table": "Conferences"
 				}
 			},
 			"dependsOn": [
@@ -423,6 +485,76 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ImportSessions')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Sessionsfile",
+								"type": "DatasetReference"
+							},
+							"name": "SessionsSource"
+						},
+						{
+							"dataset": {
+								"referenceName": "SessionsDestination",
+								"type": "DatasetReference"
+							},
+							"name": "SessionsDestination"
+						},
+						{
+							"dataset": {
+								"referenceName": "SpeakersDestination",
+								"type": "DatasetReference"
+							},
+							"name": "SpeakersDestination"
+						},
+						{
+							"dataset": {
+								"referenceName": "Conferences",
+								"type": "DatasetReference"
+							},
+							"name": "ConferencesDestination"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SessionsDestination",
+								"type": "DatasetReference"
+							},
+							"name": "Saving"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SessionExists"
+						},
+						{
+							"name": "FindSpeakerId"
+						},
+						{
+							"name": "Conference"
+						},
+						{
+							"name": "FindConferences"
+						}
+					],
+					"script": "parameters{\n\tEventId as string\n}\nsource(output(\n\t\tId as integer,\n\t\ttitle as string,\n\t\tdescription as string,\n\t\tSpeakerId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SessionsSource\nsource(output(\n\t\tId as integer,\n\t\ttitle as string,\n\t\tdescription as string,\n\t\tSpeakerId as integer,\n\t\tConferenceId as integer,\n\t\tOriginalId as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SessionsDestination\nsource(output(\n\t\tId as integer,\n\t\tCode as string,\n\t\tName as string,\n\t\tTagLine as string,\n\t\tProfilePicture as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SpeakersDestination\nsource(output(\n\t\tId as integer,\n\t\tcode as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ConferencesDestination\nSessionsSource, SessionsDestination exists(SessionsSource@Id == OriginalId,\n\tnegate:true,\n\tbroadcast: 'auto')~> SessionExists\nSessionExists, SpeakersDestination lookup(SpeakerId == Code,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> FindSpeakerId\nFindSpeakerId derive(ConferenceId = $EventId) ~> Conference\nConference, ConferencesDestination lookup(ConferenceId == ConferencesDestination@code,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> FindConferences\nFindConferences sink(input(\n\t\tId as integer,\n\t\ttitle as string,\n\t\tdescription as string,\n\t\tSpeakerId as integer,\n\t\tConferenceId as integer,\n\t\tOriginalId as integer\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\ttitle,\n\t\tdescription,\n\t\tSpeakerId = SpeakersDestination@Id,\n\t\tConferenceId = SessionsSource@Id,\n\t\tOriginalId = ConferencesDestination@Id\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Saving"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Sessionsfile')]",
+				"[concat(variables('factoryId'), '/datasets/SessionsDestination')]",
+				"[concat(variables('factoryId'), '/datasets/SpeakersDestination')]",
+				"[concat(variables('factoryId'), '/datasets/Conferences')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ImportSpeakers')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -464,65 +596,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Speakers')]",
-				"[concat(variables('factoryId'), '/datasets/SpeakersDestination')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ImportSessions')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Sessionsfile",
-								"type": "DatasetReference"
-							},
-							"name": "SessionsSource"
-						},
-						{
-							"dataset": {
-								"referenceName": "SessionsDestination",
-								"type": "DatasetReference"
-							},
-							"name": "SessionsDestination"
-						},
-						{
-							"dataset": {
-								"referenceName": "SpeakersDestination",
-								"type": "DatasetReference"
-							},
-							"name": "SpeakersDestination"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "SessionsDestination",
-								"type": "DatasetReference"
-							},
-							"name": "Saving"
-						}
-					],
-					"transformations": [
-						{
-							"name": "SessionExists"
-						},
-						{
-							"name": "FindSpeakerId"
-						},
-						{
-							"name": "Conference"
-						}
-					],
-					"script": "parameters{\n\tEventId as string\n}\nsource(output(\n\t\tId as integer,\n\t\ttitle as string,\n\t\tdescription as string,\n\t\tSpeakerId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SessionsSource\nsource(output(\n\t\tId as integer,\n\t\ttitle as string,\n\t\tdescription as string,\n\t\tSpeakerId as integer,\n\t\tConferenceId as integer,\n\t\tOriginalId as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SessionsDestination\nsource(output(\n\t\tId as integer,\n\t\tCode as string,\n\t\tName as string,\n\t\tTagLine as string,\n\t\tProfilePicture as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SpeakersDestination\nSessionsSource, SessionsDestination exists(SessionsSource@Id == OriginalId,\n\tnegate:true,\n\tbroadcast: 'auto')~> SessionExists\nSessionExists, SpeakersDestination lookup(SpeakerId == Code,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> FindSpeakerId\nFindSpeakerId derive(ConferenceId = $EventId) ~> Conference\nConference sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\ttitle,\n\t\tdescription,\n\t\tSpeakerId,\n\t\tConferenceId\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Saving"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Sessionsfile')]",
-				"[concat(variables('factoryId'), '/datasets/SessionsDestination')]",
 				"[concat(variables('factoryId'), '/datasets/SpeakersDestination')]"
 			]
 		},
@@ -596,6 +669,7 @@
 									"SessionsSource": {},
 									"SessionsDestination": {},
 									"SpeakersDestination": {},
+									"ConferencesDestination": {},
 									"Saving": {}
 								}
 							},
