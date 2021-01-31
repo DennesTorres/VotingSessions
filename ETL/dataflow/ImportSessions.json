@@ -1,0 +1,31 @@
+{
+	"name": "ImportSessions",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Sessionsfile",
+						"type": "DatasetReference"
+					},
+					"name": "SessionsSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "SessionsDestination",
+						"type": "DatasetReference"
+					},
+					"name": "SessionsDestination"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "SessionExists"
+				}
+			],
+			"script": "source(output(\n\t\tId as string,\n\t\ttitle as string,\n\t\tdescription as string,\n\t\tSpeakerId as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SessionsSource\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> SessionsDestination\nSessionsSource exists(ERROR_FUNCTION('') == ERROR_FUNCTION(''),\n\tnegate:true,\n\tbroadcast: 'auto')~> SessionExists"
+		}
+	}
+}
