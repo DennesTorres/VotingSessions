@@ -6,262 +6,12 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "SessionVoting"
-		},
-		"sessionizetemp_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'sessionizetemp'"
-		},
-		"ConferencesDB_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ConferencesDB'"
-		},
-		"Sessionize_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}"
-		},
-		"sessionizetemp_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://eventsessions.dfs.core.windows.net"
-		},
-		"dataFactory_properties_globalParameters_EventCode_value": {
-			"type": "string",
-			"defaultValue": "pudjjkcn"
-		},
-		"dataFactory_location": {
-			"type": "string",
-			"defaultValue": "northeurope"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/Sessions')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Sessionize",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"EventCode": {
-							"value": "@dataset().EventCode",
-							"type": "Expression"
-						}
-					}
-				},
-				"parameters": {
-					"EventCode": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": "/view/Sessions"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/linkedServices/Sessionize')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Sessionize')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"EventCode": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "RestService",
-				"typeProperties": {
-					"url": "[parameters('Sessionize_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": false,
-					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": [
-				"[variables('factoryId')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ImportSessions')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ReadAPI",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET"
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "FlattenHierarchy"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Info",
-									"enableReliableLogging": true
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "sessionizetemp",
-										"type": "LinkedServiceReference"
-									},
-									"path": "sessionize"
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Sessions",
-								"type": "DatasetReference",
-								"parameters": {
-									"EventCode": {
-										"value": "@pipeline().globalParameters.EventCode",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "sessionstemp",
-								"type": "DatasetReference",
-								"parameters": {
-									"EventCode": {
-										"value": "@pipeline().globalParameters.EventCode",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"annotations": []
-			},
-			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/datasets/Sessions')]",
-				"[concat(variables('factoryId'), '/datasets/sessionstemp')]",
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sessionizetemp')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('sessionizetemp_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('sessionizetemp_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": [
-				"[variables('factoryId')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sessionstemp')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sessionizetemp",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"EventCode": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@concat('sessions',dataset().EventCode,'.json')",
-							"type": "Expression"
-						},
-						"folderPath": "sessions",
-						"fileSystem": "sessionize"
-					}
-				},
-				"schema": {}
-			},
-			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sessionstemp2')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "sessionizetemp",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"EventCode": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "Binary",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@concat('sessions',dataset().EventCode,'.json')",
-							"type": "Expression"
-						},
-						"folderPath": "sessions",
-						"fileSystem": "sessionize"
-					}
-				}
-			},
-			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
-			]
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ImportSpeakers')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
@@ -340,22 +90,6 @@
 				]
 			},
 			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ConferencesDB')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('ConferencesDB_connectionString')]"
-				}
-			},
-			"dependsOn": [
 				"[variables('factoryId')]"
 			]
 		},
@@ -399,8 +133,7 @@
 				}
 			},
 			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/linkedServices/ConferencesDB')]"
+				"[variables('factoryId')]"
 			]
 		},
 		{
@@ -501,8 +234,7 @@
 				]
 			},
 			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/linkedServices/sessionizetemp')]"
+				"[variables('factoryId')]"
 			]
 		},
 		{
@@ -523,8 +255,7 @@
 				}
 			},
 			"dependsOn": [
-				"[variables('factoryId')]",
-				"[concat(variables('factoryId'), '/linkedServices/ConferencesDB')]"
+				"[variables('factoryId')]"
 			]
 		},
 		{
@@ -548,15 +279,8 @@
 						"typeProperties": {
 							"dataflow": {
 								"referenceName": "ImportSpeakers",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"SpeakersSource": {},
-									"SpeakersDestination": {},
-									"SavingSpeakers": {}
-								}
+								"type": "DataFlowReference"
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -592,15 +316,8 @@
 										"value": "'@{pipeline().globalParameters.EventCode}'",
 										"type": "Expression"
 									}
-								},
-								"datasetParameters": {
-									"SessionsSource": {},
-									"SessionsDestination": {},
-									"SpeakersDestination": {},
-									"Saving": {}
 								}
 							},
-							"staging": {},
 							"compute": {
 								"coreCount": 8,
 								"computeType": "General"
@@ -616,21 +333,6 @@
 				"[concat(variables('factoryId'), '/dataflows/ImportSpeakers')]",
 				"[concat(variables('factoryId'), '/dataflows/ImportSessions')]"
 			]
-		},
-		{
-			"name": "[parameters('factoryName')]",
-			"type": "Microsoft.DataFactory/factories",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"globalParameters": {
-					"EventCode": {
-						"type": "string",
-						"value": "[parameters('dataFactory_properties_globalParameters_EventCode_value')]"
-					}
-				}
-			},
-			"dependsOn": [],
-			"location": "[parameters('dataFactory_location')]"
 		}
 	]
 }

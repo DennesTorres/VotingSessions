@@ -8,6 +8,9 @@
 		"sessionizetemp_accountKey": {
 			"value": ""
 		},
+		"ConferencesDB_connectionString": {
+			"value": ""
+		},
 		"Sessionize_properties_typeProperties_url": {
 			"value": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}"
 		},

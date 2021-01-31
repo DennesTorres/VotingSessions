@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'sessionizetemp'"
 		},
+		"ConferencesDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ConferencesDB'"
+		},
 		"Sessionize_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "@{concat('https://sessionize.com/api/v2/',linkedService().EventCode)}"
@@ -56,6 +60,9 @@
 					},
 					"sessionizetemp_accountKey": {
 						"value": "[parameters('sessionizetemp_accountKey')]"
+					},
+					"ConferencesDB_connectionString": {
+						"value": "[parameters('ConferencesDB_connectionString')]"
 					},
 					"dataFactory_properties_globalParameters_EventCode_value": {
 						"value": "[parameters('dataFactory_properties_globalParameters_EventCode_value')]"
