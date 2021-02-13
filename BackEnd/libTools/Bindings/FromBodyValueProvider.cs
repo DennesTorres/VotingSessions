@@ -38,7 +38,6 @@ namespace libTools.Bindings
         }
 
         public Type Type => typeof(object);
-
         public string ToInvokeString() => string.Empty;
     }
 }

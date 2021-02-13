@@ -61,12 +61,14 @@ namespace Voting
 
         [FunctionName("Voting")]
         public async Task<IActionResult> RegisterVote(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "Sessions/Vote")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "Sessions/Vote")]
+            HttpRequest req,
             ILogger log, [libTools.Bindings.FromBody] VotesRecord votes)
         {
 
+        }
 
-            //validation - total of votes
+        //validation - total of votes
             var newVotes = votes.Sessions.Count();
 
             if (!string.IsNullOrEmpty(votes.UserKey))

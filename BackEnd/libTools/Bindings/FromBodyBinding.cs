@@ -21,7 +21,6 @@ namespace libTools.Bindings
         {
             // Get the HTTP request
             var request = context.BindingData["req"] as HttpRequest;
-            
             return Task.FromResult<IValueProvider>(new FromBodyValueProvider<T>(request, logger));
         }
 
